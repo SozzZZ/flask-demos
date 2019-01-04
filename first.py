@@ -8,6 +8,8 @@ from wtforms import StringField , SubmitField
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
+from flask.ext.script import Shell
+from flask.ext.migrate import Migrate,MigrateCommand
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -20,6 +22,9 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
+
+migrate = Migrate(app,db)
+manager.add_command('db',MigrateCommand)
 
 class NameForm(Form):
     name = StringField('What is your name?',validators=[Required()])
@@ -82,6 +87,11 @@ def req():
 def page_not_found(e):
     return render_template('404.html'),404
 
+
+
+def make_shell_context():
+    return dict(app=app,db=db,User=User,Role=Role)
+manager.add_command('shell',Shell(make_context=make_shell_context))
 
 if __name__ == '__main__':
     manager.run()
