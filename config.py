@@ -4,4 +4,36 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess'
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
+    FLASKY_MAIL_SENDER = 'Flasky Admin <17826839707@163.com>'
+    FLASKY_ADMIN = '17826839707@163.com'
 
+    @staticmethod
+    def init_app(app):
+        pass
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    MAIL_SERVER = 'smtp.163.com'
+    MAIL_PORT = 25
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = '17826839707@163.com'
+    MAIL_PASSWORD = 'Zhujun32032'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///'+os.path.join(basedir,'data-dev.sqlite')
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite:///'+os.path.join(basedir,'data-dev.sqlite')
+
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///'+os.path.join(basedir,'data-dev.sqlite')
+
+
+config = {
+        'development':DevelopmentConfig,
+        'testing':TestingConfig,
+        'production':ProductionConfig,
+        'default':DevelopmentConfig
+        }
