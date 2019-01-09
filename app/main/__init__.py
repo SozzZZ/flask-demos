@@ -3,6 +3,7 @@ from flask import Blueprint
 main = Blueprint('main',__name__)
 
 from . import views ,errors
+from ..models import Permission
 
 def create_app(config_name):
     from .main import main as main_blueprint
@@ -10,3 +11,6 @@ def create_app(config_name):
 
     return app
 
+@main.app_context_processor
+def inject_permissions():
+    return dict(Permission=Permission)
