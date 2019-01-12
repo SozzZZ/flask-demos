@@ -1,7 +1,26 @@
 import unittest
-from app.models import User, Role, Anonymouser
+from app.models import User, Role, AnonymousUser, Permission
+from flask import current_app
+from app import create_app , db
 
-class UserModelTestCase(unitest.TestCase):
+class UserModelTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+    
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    def test_app_exists(self):
+        self.assertFalse(current_app is None)
+    
+    def tess_app_is_testing(self):
+        self.assertTrue(current_app.config['TESTING'])
+
     def test_password_setter(self):
         u = User(password = 'haha')
         self.assertTrue(u.password_hash is not None)
@@ -23,7 +42,7 @@ class UserModelTestCase(unitest.TestCase):
 
     def test_roles_and_permissions(self):
         Role.insert_roles()
-        u = User(email='17826839707@163.com', password='123')
+        u = User(email='1053063701@qq.com', password='123')
         self.assertTrue(u.can(Permission.WRITE_ARTICLES))
         self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
 
